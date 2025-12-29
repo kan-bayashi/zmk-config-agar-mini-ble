@@ -29,6 +29,17 @@
         };
     };
 
+    combos {
+        compatible = "zmk,combos";
+
+        combo_lock_toggle {
+            timeout-ms = <50>;
+            key-positions = <36 39>;
+            bindings = <&lock_ht 4 0>;
+            layers = <4>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -73,7 +84,7 @@
 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-       &none  &none         &lock_ht 4 0  &none               &none  &none
+       &none  &none         &none  &none               &none  &none
             >;
         };
     };
