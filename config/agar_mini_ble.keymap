@@ -20,13 +20,6 @@
             bindings = <&tog>, <&none>;
         };
 
-        blt: balanced_layer_tap {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <200>;
-            bindings = <&mo>, <&kp>;
-        };
     };
 
     combos {
@@ -34,7 +27,7 @@
 
         combo_lock_toggle {
             timeout-ms = <50>;
-            key-positions = <36 39>;
+            key-positions = <36 40>;
             bindings = <&lock_ht 4 0>;
             layers = <4>;
         };
@@ -48,7 +41,7 @@
 &kp TAB    &kp Q      &kp W     &kp E  &kp R        &kp T  &kp Y      &kp U  &kp I      &kp O           &kp P      &kp BACKSLASH  &kp BSPC
 &kp LCTRL  &kp A      &kp S     &kp D  &kp F        &kp G  &kp H      &kp J  &kp K      &kp L           &kp SEMI   &kp RET
 &kp LSHFT  &kp Z      &kp X     &kp C  &kp V        &kp B  &kp N      &kp M  &kp COMMA  &kp DOT         &kp SLASH  &mo 3
-           &kp LALT   &kp LGUI         &kp SPACE         &blt 1 SPACE                   &kp RGUI        &lt 2 RALT
+           &kp LALT   &kp LGUI         &kp SPACE         &lt_hp 1 SPACE                   &kp RGUI        &lt 2 RALT
             >;
         };
 
@@ -63,8 +56,8 @@
 
         layer2 {
             bindings = <
-&kp CAPSLOCK  &kp PRINTSCREEN  &kp PAGE_UP     &kp HOME  &kp F2     &trans  &trans  &trans  &trans  &trans  &trans     &trans  &trans
-&trans        &kp DELETE       &kp PAGE_DOWN   &kp END   &kp F5     &trans  &Device_USB  &device_bt1 0 0  &device_bt2 0 0  &device_bt3 0 0  &trans     &trans
+&kp CAPSLOCK  &kp PRINTSCREEN  &kp PAGE_UP     &kp HOME  &kp F2     &msu  &trans  &trans  &trans  &trans  &trans     &trans  &trans
+&trans        &kp DELETE       &kp PAGE_DOWN   &kp END   &kp F5     &msd  &Device_USB  &device_bt1 0 0  &device_bt2 0 0  &device_bt3 0 0  &trans     &trans
 &trans        &kp PAUSE_BREAK  &kp SCROLLLOCK  &kp F4    &kp LG(V)  &trans  &trans  &trans  &trans  &trans  &trans     &trans
               &trans           &trans                    &trans             &trans                  &trans  &trans
             >;
@@ -72,10 +65,10 @@
 
         layer3 {
             bindings = <
-&bootloader  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans      &kp UP        &trans            &trans
+&bootloader_reset 0 0  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans      &kp UP        &trans            &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &kp LEFT      &kp RIGHT        &kp C_PLAY_PAUSE
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &kp DOWN  &kp C_VOL_UP  &trans
-        &trans  &trans          &lock_ht 4 0    &trans                      &kp C_MUTE  &kp C_VOL_DN
+        &trans  &trans          &soft_off     &lock_ht 4 0                  &kp C_MUTE  &kp C_VOL_DN
             >;
         };
 

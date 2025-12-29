@@ -127,7 +127,7 @@
             compatible = "zmk,behavior-soft-off";
             display-name = "KBD Lock";
             #binding-cells = <0>;
-            hold-time-ms = <1000>;
+            hold-time-ms = <3000>;
         };
 
         sys_reset: sysreset { display-name = "zmk_reserved_reset"; };
