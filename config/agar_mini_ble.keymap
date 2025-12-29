@@ -11,24 +11,18 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
-    behaviors {
-        lock_ht: lock_hold_tap {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <3000>;
-            bindings = <&tog>, <&none>;
-        };
-
-    };
-
     combos {
         compatible = "zmk,combos";
 
+        /*
+         * Lock layer exit combo
+         * Keys: positions 36 and 40 (bottom row outer keys)
+         * Condition: Only active on layer 4
+         */
         combo_lock_toggle {
-            timeout-ms = <50>;
+            timeout-ms = <200>;
             key-positions = <36 40>;
-            bindings = <&lock_ht 4 0>;
+            bindings = <&ht_tog 4 0>;
             layers = <4>;
         };
     };
@@ -38,47 +32,81 @@
 
         default_layer {
             bindings = <
-&kp TAB    &kp Q      &kp W     &kp E  &kp R        &kp T  &kp Y      &kp U  &kp I      &kp O           &kp P      &kp BACKSLASH  &kp BSPC
-&kp LCTRL  &kp A      &kp S     &kp D  &kp F        &kp G  &kp H      &kp J  &kp K      &kp L           &kp SEMI   &kp RET
-&kp LSHFT  &kp Z      &kp X     &kp C  &kp V        &kp B  &kp N      &kp M  &kp COMMA  &kp DOT         &kp SLASH  &mo 3
-           &kp LALT   &kp LGUI         &kp SPACE         &lt_hp 1 SPACE                   &kp RGUI        &lt 2 RALT
+// ┌──────────┬───────┬──────────┬───────┬───────┬───────┬───────┬───────┬──────────┬───────────┬──────────┬──────────┬─────────┐
+    &kp TAB    &kp Q   &kp W      &kp E   &kp R   &kp T   &kp Y   &kp U   &kp I      &kp O       &kp P      &kp BSLH   &kp BSPC
+// ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
+    &kp LCTRL  &kp A   &kp S      &kp D   &kp F   &kp G   &kp H   &kp J   &kp K      &kp L       &kp SEMI   &kp RET
+// ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
+    &kp LSHFT  &kp Z   &kp X      &kp C   &kp V   &kp B   &kp N   &kp M   &kp COMMA  &kp DOT     &kp SLASH  &mo 3
+// └──────────┴───────┼──────────┼───────┴───────┴───────┼───────┴───────┴──────────┼───────────┼──────────┴──────────┘
+             &kp LALT  &kp LGUI       &kp SPACE               &lt_hp 1 SPACE         &lt 2 RGUI  &kp RALT
+//                    └──────────┴───────────────────────┴──────────────────────────┴───────────┘
             >;
         };
 
         layer1 {
             bindings = <
-&gresc     &kp N1  &kp N2  &kp N3          &kp N4          &kp N5           &kp N6            &kp N7             &kp N8  &kp N9     &kp N0            &trans  &trans
-&trans     &trans  &trans  &mkp LCLK       &mmv MOVE_UP    &mkp RCLK        &trans  &kp MINUS  &kp EQUAL  &kp LEFT_BRACKET     &kp RIGHT_BRACKET  &kp SINGLE_QUOTE
-&trans     &trans  &trans  &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &trans            &trans             &trans  &trans  &trans            &trans
-           &trans  &trans                  &trans                           &trans                                       &trans     &trans
+// ┌───────┬───────┬───────┬────────────────┬────────────────┬─────────────────┬───────┬───────────┬───────────┬──────────┬──────────┬─────────┬───────┐
+    &gresc  &kp N1  &kp N2  &kp N3           &kp N4           &kp N5            &kp N6  &kp N7      &kp N8      &kp N9     &kp N0     &trans    &trans
+// ├───────┼───────┼───────┼────────────────┼────────────────┼─────────────────┼───────┼───────────┼───────────┼──────────┼──────────┼─────────┤
+    &trans  &trans  &trans  &mkp LCLK        &mmv MOVE_UP     &mkp RCLK         &trans  &kp MINUS   &kp EQUAL   &kp LBKT   &kp RBKT   &kp SQT
+// ├───────┼───────┼───────┼────────────────┼────────────────┼─────────────────┼───────┼───────────┼───────────┼──────────┼──────────┼─────────┤
+    &trans  &trans  &trans  &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_RIGHT   &trans  &trans      &trans      &trans     &trans     &trans
+// └───────┴───────┼───────┼────────────────┴────────────────┴─────────────────┼───────┴───────────┴───────────┼──────────┼──────────┴─────────┘
+            &trans  &trans      &trans                                              &trans                      &trans     &trans
+//                 └───────┴───────────────────────────────────────────────────┴───────────────────────────────┴──────────┘
             >;
         };
 
         layer2 {
             bindings = <
-&kp CAPSLOCK  &kp PRINTSCREEN  &kp PAGE_UP     &kp HOME  &kp F2     &msu  &trans  &trans  &trans  &trans  &trans     &trans  &trans
-&trans        &kp DELETE       &kp PAGE_DOWN   &kp END   &kp F5     &msd  &Device_USB  &device_bt1 0 0  &device_bt2 0 0  &device_bt3 0 0  &trans     &trans
-&trans        &kp PAUSE_BREAK  &kp SCROLLLOCK  &kp F4    &kp LG(V)  &trans  &trans  &trans  &trans  &trans  &trans     &trans
-              &trans           &trans                    &trans             &trans                  &trans  &trans
+// ┌─────────┬─────────────────┬──────────┬─────────┬───────────┬───────┬─────────────┬─────────────────┬─────────────────┬─────────────────┬─────────────┬───────┬───────┐
+    &kp CAPS  &kp PSCRN         &kp PG_UP  &kp HOME  &kp F2      &msu    &trans        &trans            &trans            &trans            &trans        &trans  &trans
+// ├─────────┼─────────────────┼──────────┼─────────┼───────────┼───────┼─────────────┼─────────────────┼─────────────────┼─────────────────┼─────────────┼───────┤
+    &trans    &kp DEL           &kp PG_DN  &kp END   &kp F5      &msd    &Device_USB   &device_bt1 0 0   &device_bt2 0 0   &device_bt3 0 0   &trans  &trans
+// ├─────────┼─────────────────┼──────────┼─────────┼───────────┼───────┼─────────────┼─────────────────┼─────────────────┼─────────────────┼─────────────┼───────┤
+    &trans    &kp PAUSE_BREAK   &kp SLCK   &kp F4    &kp LG(V)   &trans  &trans        &trans            &trans            &trans            &trans        &trans
+// └─────────┴─────────────────┼──────────┼─────────┴───────────┴───────┼─────────────┴─────────────────┴─────────────────┼─────────────────┼─────────────┴───────┘
+              &trans            &trans         &kp SHOW_BATTERY                 &kp SHOW_LED                               &trans            &trans
+//                             └──────────┴─────────────────────────────┴─────────────────────────────────────────────────┴─────────────────┘
             >;
         };
 
         layer3 {
             bindings = <
-&bootloader_reset 0 0  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans      &kp UP        &trans            &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &kp LEFT      &kp RIGHT        &kp C_PLAY_PAUSE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans      &kp DOWN  &kp C_VOL_UP  &trans
-        &trans  &trans          &soft_off     &lock_ht 4 0                  &kp C_MUTE  &kp C_VOL_DN
+// ┌───────────────────────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┬──────────┬──────────────┬─────────┬───────┐
+    &bootloader_reset 0 0   &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans     &kp UP         &trans    &trans
+// ├───────────────────────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼──────────┼──────────────┼─────────┤
+    &trans                  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp LEFT   &kp RIGHT      &kp C_PP
+// ├───────────────────────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┼──────────┼──────────────┼─────────┤
+    &trans                  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp DOWN   &kp C_VOL_UP   &trans
+// └───────────────────────┴───────┼───────┼───────┴───────┴───────┼───────┴───────┴───────┼──────────┼──────────────┴─────────┘
+                            &trans  &trans      &soft_off               &ht_tog 4 0        &kp C_MUTE  &kp C_VOL_DN
+//                                 └───────┴───────────────────────┴──────────────────────┴──────────┘
             >;
         };
 
+        /*
+         * Lock Layer (Layer 4)
+         * Purpose: Disable all key inputs for safe transport or storage.
+         * Entry: layer3 + space (ht_tog 4 0 with 2-second hold)
+         * Exit: Combo <36 40> with 2-second hold (layer 4 only)
+         */
         lock_layer {
             bindings = <
-&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-       &none  &none         &none  &none               &none  &none
+// ┌─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+    &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none
+// ├─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+    &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none
+// ├─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+    &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none     &none
+// └─────────┴─────────┼─────────┼─────────┴─────────┴─────────┼─────────┴─────────┴─────────┼─────────┼─────────┴─────────┘
+              &none     &none         &none                         &none                     &none     &none
+//                     └─────────┴─────────────────────────────┴─────────────────────────────┴─────────┘
             >;
         };
+        layer5 { status = "reserved"; };
+        layer6 { status = "reserved"; };
+        layer7 { status = "reserved"; };
     };
 };

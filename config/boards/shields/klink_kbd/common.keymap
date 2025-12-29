@@ -3,15 +3,21 @@
  *
  * SPDX-License-Identifier: MIT
  */
+/*
+ * Firmware version macro identifier
+ * Note: Named for ZMK Studio's reserved behavior naming convention.
+ * Actual output: modifier key combination as version indicator.
+ */
 #define FW_VER zmk_firmware_version_251115
- 
-#if 1
+
+/* ========================================
+ * Section 1: Behavior Omission Definitions
+ * ======================================== */
 #define ZMK_BEHAVIORS_OMIT_CAPS_WORD        // &caps_word
 #define ZMK_BEHAVIORS_OMIT_KT               // &kt, Key Toggle
 #define ZMK_BEHAVIORS_OMIT_KEY_REPEAT       // &key_repeat, Key Repeat
 #define ZMK_BEHAVIORS_OMIT_SK               // &sk, Sticky Key
 #define ZMK_BEHAVIORS_OMIT_STICKY_LAYER     // &sl, Sticky Layer
-#endif
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -21,7 +27,9 @@
 
 / {
     behaviors {
-        //output ~ with RShift
+        /* ========================================
+         * Section 2: Core Behaviors (gresc, mt, lt)
+         * ======================================== */
         gresc: grave_escape {
             compatible = "zmk,behavior-mod-morph";
             #binding-cells = <0>;
@@ -77,19 +85,21 @@
             bindings = <&mo>, <&kp>;
             display-name = "Layer-Tap(HP)";
         };
-        
-        // trans和none重命名一下，trans排在前面
+
+        // Rename trans and none for ZMK Studio display; trans listed first
         trans: transparent { display-name = "_Trans"; };
         none: none { display-name = "Key(None)"; };
-        
 
-        #if 1
+        /* ========================================
+         * Section 3: Device Control (USB, BT, Reset)
+         * ======================================== */
         out: outputs { display-name = "zmk_reserved_output_sel"; };
         ZMK_MACRO(Device_USB, bindings = <&out OUT_USB>;)
 
         bt: bluetooth { display-name = "zmk_reserved_bluetooth"; };
-        
-        #define SHOW_LED 0xAB //A5-AF Reserved
+
+        #define SHOW_LED 0xAB     // Show BLE connection status
+        #define SHOW_BATTERY 0xAC // Show battery level
         ZMK_MACRO(FW_VER, bindings = <&kp LCTRL &kp LALT &kp LSHIFT &kp LGUI &kp RCTRL &kp RALT &kp RSHIFT &kp RGUI>;)
         ZMK_MACRO(zmk_reserved_bt_clear_0, bindings = <&bt BT_SEL 0>, <&bt BT_CLR>, <&kp SHOW_LED>;)
         ZMK_MACRO(zmk_reserved_bt_clear_1, bindings = <&bt BT_SEL 1>, <&bt BT_CLR>, <&kp SHOW_LED>;)
@@ -127,25 +137,44 @@
             compatible = "zmk,behavior-soft-off";
             display-name = "KBD Lock";
             #binding-cells = <0>;
-            hold-time-ms = <3000>;
+            hold-time-ms = <2000>;
         };
 
         sys_reset: sysreset { display-name = "zmk_reserved_reset"; };
         bootloader: bootload { display-name = "zmk_reserved_bootloader"; };
-        
-        bootloader_reset:bootloader_reset {
+
+        bootloader_reset: bootloader_reset {
             compatible = "zmk,behavior-hold-tap";
             display-name = "RESET";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <3000>;  // delay amount in ms
+            tapping-term-ms = <2000>;  // delay amount in ms
             bindings = <&bootloader>, <&sys_reset>;
         };
-        
+
         studio_unlock: studio_unlock { display-name = "zmk_reserved_studio_unlock"; };
-        #endif
-        
-        //mouse move
+
+        /*
+         * Hold-tap for layer toggle
+         * Usage: &ht_tog LAYER 0
+         * Hold (2s): Toggle layer on/off
+         * Tap: None (no action)
+         */
+        ht_tog: hold_tap_toggle {
+            compatible = "zmk,behavior-hold-tap";
+            display-name = "HT-Toggle";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <2000>;
+            bindings = <&tog>, <&none>;
+        };
+
+        /* ========================================
+         * Section 4: Mouse Behaviors
+         * Note: tapping-term-ms = 0 means these function as simple key bindings.
+         * This is intentional for ZMK Studio display purposes.
+         * To enable tap-dance, set tapping-term-ms > 0 and add bindings.
+         * ======================================== */
         mmu:mouse_move_up {
             compatible = "zmk,behavior-tap-dance";
             display-name = "Mouse Move Up";
