@@ -10,6 +10,25 @@
 #include <dt-bindings/zmk/pointing.h>
 
 / {
+    behaviors {
+        lock_td: lock_tap_dance {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <2000>;
+            bindings = <&tog>, <&none>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        combo_lock {
+            timeout-ms = <50>;
+            key-positions = <0 12>;
+            bindings = <&lock_td 7 0>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -76,12 +95,12 @@
             >;
         };
 
-        layer7 {
+        lock_layer {
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-        &trans  &trans          &trans          &trans                  &trans  &trans
+&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+&none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+       &none  &none         &none         &none               &none  &none
             >;
         };
     };
