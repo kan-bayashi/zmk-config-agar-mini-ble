@@ -8,10 +8,13 @@
 #include <zmk/battery.h>
 #include <zmk/ble.h>
 #include <zmk/hid_indicators.h>
-#include <zmk/events/ble_active_profile_changed.h>
+#include <zmk/pm.h>
+
 #include <zmk/events/battery_state_changed.h>
+#include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
 #include <zmk/events/keycode_state_changed.h>
+#include <zmk/events/layer_state_changed.h>
 
 /* HID Lock indicator bit (only Caps Lock is used) */
 #define CAPSLOCK_BIT BIT(1)
@@ -32,6 +35,14 @@
 /* Special keycodes to trigger LED updates (defined in common.keymap) */
 #define KEYCODE_SHOW_LED     0xAB
 #define KEYCODE_SHOW_BATTERY 0xAC
+#define KEYCODE_SOFT_OFF_LED 0xAD
+
+/* Lock layer number for LED feedback */
+#define LOCK_LAYER 4
+
+/* Feedback indicator flash count */
+#define FEEDBACK_FLASH_COUNT   8    /* 2 blinks * 4 phases */
+#define SOFT_OFF_FLASH_COUNT   12   /* 3 blinks * 4 phases */
 
 /* LED timing constants */
 #define LED_TICK_MS           20
@@ -83,6 +94,10 @@ struct indicator_state_t {
     uint8_t flash_times;
     uint8_t battery_show;       /* Flag to show battery indicator */
     uint8_t battery_flash_times;
+    uint8_t feedback_show;      /* Flag to show feedback indicator */
+    uint8_t feedback_flash_times;
+    uint8_t feedback_color;     /* Color for feedback indicator */
+    uint8_t soft_off_pending;   /* Flag to execute soft_off after LED */
 } indicator_state;
 
 static void set_indicator_color(uint8_t bits) {
@@ -141,6 +156,35 @@ static void battery_indicator_show(void) {
     LOG_DBG("Battery level: %d%%", indicator_state.battery);
 }
 
+static void feedback_indicator_show(uint8_t color, uint8_t flash_count) {
+    indicator_state.feedback_show = 1;
+    indicator_state.feedback_color = color;
+    indicator_state.feedback_flash_times = flash_count;
+    LOG_DBG("Feedback indicator: color=%d, count=%d", color, flash_count);
+}
+
+/* Layer state change listener for Lock layer LED feedback */
+static int layer_state_changed_cb(const zmk_event_t *eh) {
+    struct zmk_layer_state_changed *layer_ev = as_zmk_layer_state_changed(eh);
+    if (layer_ev == NULL) {
+        return 0;
+    }
+
+    if (layer_ev->layer == LOCK_LAYER) {
+        if (layer_ev->state) {
+            /* Lock layer activated: Yellow LED */
+            feedback_indicator_show(COLOR_YELLOW, FEEDBACK_FLASH_COUNT);
+        } else {
+            /* Lock layer deactivated: Green LED */
+            feedback_indicator_show(COLOR_GREEN, FEEDBACK_FLASH_COUNT);
+        }
+    }
+    return 0;
+}
+
+ZMK_LISTENER(layer_indicator, layer_state_changed_cb);
+ZMK_SUBSCRIPTION(layer_indicator, zmk_layer_state_changed);
+
 static uint8_t get_battery_color(uint8_t level) {
     if (level >= BATTERY_HIGH_THRESHOLD) {
         return COLOR_GREEN;      /* 80%+ : Green */
@@ -160,6 +204,10 @@ static int zmk_handle_keycode_user(struct zmk_keycode_state_changed *event) {
         ble_active_profile_update();
     } else if (key == KEYCODE_SHOW_BATTERY) {
         battery_indicator_show();
+    } else if (key == KEYCODE_SOFT_OFF_LED) {
+        /* Red LED feedback then execute soft_off */
+        feedback_indicator_show(COLOR_RED, SOFT_OFF_FLASH_COUNT);
+        indicator_state.soft_off_pending = 1;
     }
     return ZMK_EV_EVENT_HANDLED;
 }
@@ -252,6 +300,28 @@ void led_process_thread(void) {
                 if (indicator_state.battery_flash_times == 0) {
                     indicator_state.battery_show = 0;
                     set_indicator_color(COLOR_OFF);
+                }
+            }
+        } else if (indicator_state.feedback_show) {
+            /* Feedback indicator (soft_off, lock layer) */
+            if ((led_timer_steps & 0xf) == 0xf) {
+                indicator_state.feedback_flash_times--;
+
+                if ((led_timer_steps >> 4) & 0x1) {
+                    set_indicator_color(indicator_state.feedback_color);
+                } else {
+                    set_indicator_color(COLOR_OFF);
+                }
+
+                if (indicator_state.feedback_flash_times == 0) {
+                    indicator_state.feedback_show = 0;
+                    set_indicator_color(COLOR_OFF);
+
+                    /* Execute soft_off if pending */
+                    if (indicator_state.soft_off_pending) {
+                        indicator_state.soft_off_pending = 0;
+                        zmk_pm_soft_off();
+                    }
                 }
             }
         } else if (indicator_state.battery < BATTERY_LOW_THRESHOLD) {

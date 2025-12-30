@@ -98,8 +98,9 @@
 
         bt: bluetooth { display-name = "zmk_reserved_bluetooth"; };
 
-        #define SHOW_LED 0xAB     // Show BLE connection status
-        #define SHOW_BATTERY 0xAC // Show battery level
+        #define SHOW_LED 0xAB      // Show BLE connection status
+        #define SHOW_BATTERY 0xAC  // Show battery level
+        #define SHOW_SOFT_OFF 0xAD // Soft off with LED feedback
         ZMK_MACRO(FW_VER, bindings = <&kp LCTRL &kp LALT &kp LSHIFT &kp LGUI &kp RCTRL &kp RALT &kp RSHIFT &kp RGUI>;)
         ZMK_MACRO(zmk_reserved_bt_clear_0, bindings = <&bt BT_SEL 0>, <&bt BT_CLR>, <&kp SHOW_LED>;)
         ZMK_MACRO(zmk_reserved_bt_clear_1, bindings = <&bt BT_SEL 1>, <&bt BT_CLR>, <&kp SHOW_LED>;)
@@ -138,6 +139,20 @@
             display-name = "KBD Lock";
             #binding-cells = <0>;
             hold-time-ms = <2000>;
+        };
+
+        /*
+         * Soft off with LED feedback
+         * Hold (2s): Red LED blink -> soft_off
+         * Tap: None
+         */
+        ht_soft_off: hold_tap_soft_off {
+            compatible = "zmk,behavior-hold-tap";
+            display-name = "Soft Off(LED)";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <2000>;
+            bindings = <&kp>, <&none>;
         };
 
         sys_reset: sysreset { display-name = "zmk_reserved_reset"; };
