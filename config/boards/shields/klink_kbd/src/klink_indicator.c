@@ -212,6 +212,8 @@ static int usb_conn_state_changed_cb(const zmk_event_t *eh) {
                 indicator_state.feedback_color = COLOR_OFF;
             }
             zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
+            /* Refresh BLE indicator so BT color blink resumes after USB disconnect */
+            ble_active_profile_update();
             break;
         default:
             break;
