@@ -34,8 +34,8 @@
             compatible = "zmk,behavior-mod-morph";
             #binding-cells = <0>;
             bindings = <&kp ESC>, <&kp GRAVE>;
-            mods = <(MOD_LGUI|MOD_LSFT|MOD_RGUI|MOD_RSFT)>;
-            keep-mods = <(MOD_RSFT)>;
+            mods = <(MOD_LCTL|MOD_LSFT|MOD_RSFT)>;
+            keep-mods = <(MOD_LSFT|MOD_RSFT)>;
         };
 
         mo: momentary_layer { display-name = "Layer Momentary"; };

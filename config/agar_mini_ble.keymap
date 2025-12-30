@@ -11,60 +11,6 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
-    behaviors {
-        /*
-         * Custom grave escape: Ctrl+Esc → `, Shift+Esc → ~
-         * Overrides the default gresc from common.keymap
-         */
-        esc_grave: esc_grave {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&kp ESC>, <&kp GRAVE>;
-            mods = <(MOD_LCTL|MOD_RCTL)>;
-            keep-mods = <0>;
-        };
-
-        gresc: grave_escape {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&esc_grave>, <&kp TILDE>;
-            mods = <(MOD_LSFT|MOD_RSFT)>;
-        };
-
-        /*
-         * Vim-style arrow keys with GUI modifier
-         * GUI + h/j/k/l → Arrow keys (other modifiers pass through)
-         */
-        hm_h: hm_h {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&kp H>, <&kp LEFT>;
-            mods = <(MOD_LGUI|MOD_RGUI)>;
-            keep-mods = <0>;
-        };
-        hm_j: hm_j {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&kp J>, <&kp DOWN>;
-            mods = <(MOD_LGUI|MOD_RGUI)>;
-            keep-mods = <0>;
-        };
-        hm_k: hm_k {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&kp K>, <&kp UP>;
-            mods = <(MOD_LGUI|MOD_RGUI)>;
-            keep-mods = <0>;
-        };
-        hm_l: hm_l {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&kp L>, <&kp RIGHT>;
-            mods = <(MOD_LGUI|MOD_RGUI)>;
-            keep-mods = <0>;
-        };
-    };
-
     combos {
         compatible = "zmk,combos";
 
@@ -89,11 +35,11 @@
 // ┌──────────┬───────┬──────────┬───────┬───────┬───────┬───────┬───────┬──────────┬───────────┬──────────┬──────────┬─────────┐
     &kp TAB    &kp Q   &kp W      &kp E   &kp R   &kp T   &kp Y   &kp U   &kp I      &kp O       &kp P      &kp BSLH   &kp BSPC
 // ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
-    &kp LCTRL  &kp A   &kp S      &kp D   &kp F   &kp G   &hm_h   &hm_j   &hm_k      &hm_l       &kp SEMI   &kp RET
+    &kp LCTRL  &kp A   &kp S      &kp D   &kp F   &kp G   &kp H   &kp J   &kp K      &kp L       &kp SEMI   &kp RET
 // ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
     &kp LSHFT  &kp Z   &kp X      &kp C   &kp V   &kp B   &kp N   &kp M   &kp COMMA  &kp DOT     &kp SLASH  &mo 3
 // └──────────┴───────┼──────────┼───────┴───────┴───────┼───────┴───────┴──────────┼───────────┼──────────┴──────────┘
-             &kp LALT  &kp LGUI       &kp SPACE               &lt_hp 1 SPACE         &lt 2 RGUI  &kp RALT
+             &kp LALT  &lt 5 LGUI     &kp SPACE               &lt_hp 1 SPACE         &lt 2 RGUI  &kp RALT
 //                    └──────────┴───────────────────────┴──────────────────────────┴───────────┘
             >;
         };
@@ -159,7 +105,25 @@
 //                     └─────────┴─────────────────────────────┴─────────────────────────────┴─────────┘
             >;
         };
-        layer5 { status = "reserved"; };
+        /*
+         * GUI Layer (Layer 5)
+         * Purpose: Vim-style arrows with GUI combinations
+         * Entry: Hold LGUI (layer-tap)
+         * h/j/k/l → Arrow keys, others → GUI+key
+         */
+        gui_layer {
+            bindings = <
+// ┌──────────────┬───────────┬───────────┬───────────┬───────────┬───────────┬───────────┬───────────┬──────────────┬─────────────┬────────────┬──────────────┬─────────────┐
+    &kp LG(TAB)    &kp LG(Q)   &kp LG(W)   &kp LG(E)   &kp LG(R)   &kp LG(T)   &kp LG(Y)   &kp LG(U)   &kp LG(I)      &kp LG(O)     &kp LG(P)    &kp LG(BSLH)   &kp LG(BSPC)
+// ├──────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼──────────────┼─────────────┼────────────┼──────────────┤
+    &trans         &kp LG(A)   &kp LG(S)   &kp LG(D)   &kp LG(F)   &kp LG(G)   &kp LEFT    &kp DOWN    &kp UP         &kp RIGHT     &kp LG(SEMI) &kp LG(RET)
+// ├──────────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼───────────┼──────────────┼─────────────┼────────────┼──────────────┤
+    &trans         &kp LG(Z)   &kp LG(X)   &kp LG(C)   &kp LG(V)   &kp LG(B)   &kp LG(N)   &kp LG(M)   &kp LG(COMMA)  &kp LG(DOT)   &kp LG(SLASH) &trans
+// └──────────────┴───────────┼───────────┼───────────┴───────────┴───────────┼───────────┴───────────┴──────────────┼─────────────┼────────────┴──────────────┘
+                   &trans       &trans          &kp LG(SPACE)                       &kp LG(SPACE)                      &trans        &trans
+//                            └───────────┴───────────────────────────────────┴──────────────────────────────────────┴─────────────┘
+            >;
+        };
         layer6 { status = "reserved"; };
         layer7 { status = "reserved"; };
     };
