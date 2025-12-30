@@ -1,5 +1,6 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/led.h>
 #include <zephyr/init.h>
 #include <zephyr/kernel.h>
@@ -90,6 +91,14 @@ static const uint8_t led_idx[] = {DT_NODE_CHILD_IDX(DT_ALIAS(indicator_r)),
                                   DT_NODE_CHILD_IDX(DT_ALIAS(indicator_g)),
                                   DT_NODE_CHILD_IDX(DT_ALIAS(indicator_b))};
 
+#define WAKEUP_SCAN_NODE DT_NODELABEL(wakeup_scan)
+#if DT_NODE_EXISTS(WAKEUP_SCAN_NODE)
+#define WAKEUP_COL_CTLR DT_GPIO_CTLR_BY_IDX(WAKEUP_SCAN_NODE, col_gpios, 0)
+#define WAKEUP_COL_PIN DT_GPIO_PIN_BY_IDX(WAKEUP_SCAN_NODE, col_gpios, 0)
+#define WAKEUP_COL_FLAGS DT_GPIO_FLAGS_BY_IDX(WAKEUP_SCAN_NODE, col_gpios, 0)
+static const struct device *wakeup_col_dev = DEVICE_DT_GET(WAKEUP_COL_CTLR);
+#endif
+
 struct indicator_state_t {
     uint8_t keylock;
     uint8_t connection;
@@ -103,6 +112,22 @@ struct indicator_state_t {
     uint8_t feedback_color;     /* Color for feedback indicator */
     uint8_t soft_off_pending;   /* Flag to execute soft_off after LED */
 } indicator_state;
+
+static void prepare_soft_off_wakeup(void) {
+#if DT_NODE_EXISTS(WAKEUP_SCAN_NODE)
+    if (!device_is_ready(wakeup_col_dev)) {
+        LOG_WRN("Soft off wakeup: wakeup column device not ready");
+        return;
+    }
+
+    /* Drive the wakeup column low so the row edge can trigger wakeup */
+    int ret = gpio_pin_configure(wakeup_col_dev, WAKEUP_COL_PIN,
+                                 GPIO_OUTPUT_ACTIVE | WAKEUP_COL_FLAGS);
+    if (ret < 0) {
+        LOG_WRN("Soft off wakeup: failed to drive column low (%d)", ret);
+    }
+#endif
+}
 
 static void set_indicator_color(uint8_t bits) {
     static uint8_t last_bits = 0;
@@ -360,6 +385,7 @@ void led_process_thread(void) {
                     /* Execute soft_off if pending */
                     if (indicator_state.soft_off_pending) {
                         indicator_state.soft_off_pending = 0;
+                        prepare_soft_off_wakeup();
                         zmk_pm_soft_off();
                     }
                 }
