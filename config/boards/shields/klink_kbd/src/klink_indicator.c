@@ -203,8 +203,9 @@ static int usb_conn_state_changed_cb(const zmk_event_t *eh) {
             feedback_indicator_show(COLOR_WHITE, FEEDBACK_FLASH_COUNT);
             break;
         case ZMK_USB_CONN_NONE:
-            /* USB disconnected: switch back to BLE */
+            /* USB disconnected: switch back to BLE with profile LED */
             zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
+            ble_active_profile_update();
             break;
         default:
             break;
