@@ -7,14 +7,17 @@
 
 #include <zmk/battery.h>
 #include <zmk/ble.h>
+#include <zmk/endpoints.h>
 #include <zmk/hid_indicators.h>
 #include <zmk/pm.h>
+#include <zmk/usb.h>
 
 #include <zmk/events/battery_state_changed.h>
 #include <zmk/events/ble_active_profile_changed.h>
 #include <zmk/events/hid_indicators_changed.h>
 #include <zmk/events/keycode_state_changed.h>
 #include <zmk/events/layer_state_changed.h>
+#include <zmk/events/usb_conn_state_changed.h>
 
 /* HID Lock indicator bit (only Caps Lock is used) */
 #define CAPSLOCK_BIT BIT(1)
@@ -184,6 +187,34 @@ static int layer_state_changed_cb(const zmk_event_t *eh) {
 
 ZMK_LISTENER(layer_indicator, layer_state_changed_cb);
 ZMK_SUBSCRIPTION(layer_indicator, zmk_layer_state_changed);
+
+#if IS_ENABLED(CONFIG_ZMK_USB)
+/* Auto-switch endpoint based on USB connection state */
+static int usb_conn_state_changed_cb(const zmk_event_t *eh) {
+    struct zmk_usb_conn_state_changed *usb_ev = as_zmk_usb_conn_state_changed(eh);
+    if (usb_ev == NULL) {
+        return 0;
+    }
+
+    switch (usb_ev->conn_state) {
+        case ZMK_USB_CONN_HID:
+            /* USB HID ready: switch to USB output with white LED */
+            zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
+            feedback_indicator_show(COLOR_WHITE, FEEDBACK_FLASH_COUNT);
+            break;
+        case ZMK_USB_CONN_NONE:
+            /* USB disconnected: switch back to BLE */
+            zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+ZMK_LISTENER(usb_auto_switch, usb_conn_state_changed_cb);
+ZMK_SUBSCRIPTION(usb_auto_switch, zmk_usb_conn_state_changed);
+#endif // IS_ENABLED(CONFIG_ZMK_USB)
 
 static uint8_t get_battery_color(uint8_t level) {
     if (level >= BATTERY_HIGH_THRESHOLD) {
