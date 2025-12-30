@@ -199,8 +199,11 @@ static int usb_conn_state_changed_cb(const zmk_event_t *eh) {
     switch (usb_ev->conn_state) {
         case ZMK_USB_CONN_HID:
             /* USB HID ready: switch to USB output with white LED */
-            zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
-            feedback_indicator_show(COLOR_WHITE, FEEDBACK_FLASH_COUNT);
+            /* Only if USB is actually powered (avoid false triggers on disconnect) */
+            if (zmk_usb_is_powered()) {
+                zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
+                feedback_indicator_show(COLOR_WHITE, FEEDBACK_FLASH_COUNT);
+            }
             break;
         case ZMK_USB_CONN_NONE:
             /* USB disconnected: switch back to BLE with profile LED */
