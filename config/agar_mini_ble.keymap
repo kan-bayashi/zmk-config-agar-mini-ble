@@ -11,6 +11,60 @@
 #include <dt-bindings/zmk/bt.h>
 
 / {
+    behaviors {
+        /*
+         * Custom grave escape: Ctrl+Esc → `, Shift+Esc → ~
+         * Overrides the default gresc from common.keymap
+         */
+        esc_grave: esc_grave {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LCTL|MOD_RCTL)>;
+            keep-mods = <0>;
+        };
+
+        gresc: grave_escape {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&esc_grave>, <&kp TILDE>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        /*
+         * Vim-style arrow keys with GUI modifier
+         * GUI + h/j/k/l → Arrow keys (other modifiers pass through)
+         */
+        hm_h: hm_h {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp H>, <&kp LEFT>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <0>;
+        };
+        hm_j: hm_j {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp J>, <&kp DOWN>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <0>;
+        };
+        hm_k: hm_k {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp K>, <&kp UP>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <0>;
+        };
+        hm_l: hm_l {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp L>, <&kp RIGHT>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <0>;
+        };
+    };
+
     combos {
         compatible = "zmk,combos";
 
@@ -35,7 +89,7 @@
 // ┌──────────┬───────┬──────────┬───────┬───────┬───────┬───────┬───────┬──────────┬───────────┬──────────┬──────────┬─────────┐
     &kp TAB    &kp Q   &kp W      &kp E   &kp R   &kp T   &kp Y   &kp U   &kp I      &kp O       &kp P      &kp BSLH   &kp BSPC
 // ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
-    &kp LCTRL  &kp A   &kp S      &kp D   &kp F   &kp G   &kp H   &kp J   &kp K      &kp L       &kp SEMI   &kp RET
+    &kp LCTRL  &kp A   &kp S      &kp D   &kp F   &kp G   &hm_h   &hm_j   &hm_k      &hm_l       &kp SEMI   &kp RET
 // ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
     &kp LSHFT  &kp Z   &kp X      &kp C   &kp V   &kp B   &kp N   &kp M   &kp COMMA  &kp DOT     &kp SLASH  &mo 3
 // └──────────┴───────┼──────────┼───────┴───────┴───────┼───────┴───────┴──────────┼───────────┼──────────┴──────────┘
