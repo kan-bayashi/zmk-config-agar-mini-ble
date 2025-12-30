@@ -79,6 +79,12 @@ ZMK firmware configuration for the Agar Mini BLE 40% keyboard.
 - **SoftOff**: Hold 2s to power off (red LED feedback)
 - **Lock Layer**: Hold 2s to enter lock mode (yellow LED), combo to exit (green LED)
 - **USB Auto-Switch**: Automatically switches to USB when connected (white LED)
+- **Wakeup (Soft off)**: S key wakes the board (configured in `config/boards/shields/klink_kbd/common.overlay`)
+
+## Wakeup Notes (Soft off)
+
+- Wakeup source is the S key (row 1, col 2) via `wakeup_scan` in `config/boards/shields/klink_kbd/common.overlay`.
+- If wakeup feels unresponsive, hold S for ~0.5-1s or tap A/S/D a few times to create a reliable edge.
 
 ## LED Indicators
 
