@@ -46,6 +46,7 @@
 /* Feedback indicator flash count */
 #define FEEDBACK_FLASH_COUNT   8    /* 2 blinks * 4 phases */
 #define SOFT_OFF_FLASH_COUNT   12   /* 3 blinks * 4 phases */
+#define USB_FLASH_COUNT        4    /* 1 blink * 4 phases */
 
 /* LED timing constants */
 #define LED_TICK_MS           20
@@ -198,17 +199,19 @@ static int usb_conn_state_changed_cb(const zmk_event_t *eh) {
 
     switch (usb_ev->conn_state) {
         case ZMK_USB_CONN_HID:
-            /* USB HID ready: skip if BLE indicator is active (disconnect in progress) */
-            if (indicator_state.connection != CONN_IDLE) {
-                break;
-            }
+            /* USB HID ready: switch to USB output with white LED */
             zmk_endpoints_select_transport(ZMK_TRANSPORT_USB);
-            feedback_indicator_show(COLOR_WHITE, FEEDBACK_FLASH_COUNT);
+            feedback_indicator_show(COLOR_WHITE, USB_FLASH_COUNT);
             break;
         case ZMK_USB_CONN_NONE:
-            /* USB disconnected: switch back to BLE with profile LED */
+            /* USB disconnected: switch back to BLE */
+            if (indicator_state.feedback_show && indicator_state.feedback_color == COLOR_WHITE) {
+                /* Cancel pending USB indicator so it doesn't fire after disconnect */
+                indicator_state.feedback_show = 0;
+                indicator_state.feedback_flash_times = 0;
+                indicator_state.feedback_color = COLOR_OFF;
+            }
             zmk_endpoints_select_transport(ZMK_TRANSPORT_BLE);
-            ble_active_profile_update();
             break;
         default:
             break;
