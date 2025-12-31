@@ -39,7 +39,7 @@
 // ├──────────┼───────┼──────────┼───────┼───────┼───────┼───────┼───────┼──────────┼───────────┼──────────┼──────────┤
     &kp LSHFT  &kp Z   &kp X      &kp C   &kp V   &kp B   &kp N   &kp M   &kp COMMA  &kp DOT     &kp SLASH  &mo 3
 // └──────────┴───────┼──────────┼───────┴───────┴───────┼───────┴───────┴──────────┼───────────┼──────────┴──────────┘
-             &kp LALT  &kp LGUI     &kp SPACE               &lt_hp 1 SPACE           &lt 2 RGUI  &lt 5 RALT
+             &kp LALT  &kp LGUI     &lt_left 6 SPACE        &lt_hp 1 SPACE           &lt 2 RGUI  &lt 5 RALT
 //                    └──────────┴───────────────────────┴──────────────────────────┴───────────┘
             >;
         };
@@ -118,7 +118,27 @@
 //                 └───────┴───────────────────────┴───────────────────────┴───────┘
             >;
         };
-        layer6 { status = "reserved"; };
+        /*
+         * Vim Navigation Layer (Layer 6)
+         * Entry: Left space hold (lt_left)
+         * HJKL: Arrow keys (Vim style)
+         * A: Home (Ctrl+a), E: End (Ctrl+e), D: PgDn (Ctrl+d), U: PgUp (Ctrl+u)
+         */
+        vim_nav_layer {
+            bindings = <
+// ┌───────┬───────┬───────┬─────────┬───────┬───────┬───────┬─────────┬───────┬───────────┬───────┬───────┬───────┐
+    &trans  &trans  &trans  &kp END   &trans  &trans  &trans  &kp PG_UP &trans  &trans      &trans  &trans  &trans
+// │       │       │       │    E    │       │       │       │    U    │       │           │       │       │       │
+// ├───────┼───────┼───────┼─────────┼───────┼───────┼───────┼─────────┼───────┼───────────┼───────┼───────────────┤
+    &trans  &kp HOME &trans &kp PG_DN &trans  &trans  &kp LEFT &kp DOWN &kp UP  &kp RIGHT   &trans  &trans
+// │       │   A   │       │    D    │       │       │   H   │    J    │   K   │     L     │       │               │
+// ├───────┼───────┼───────┼─────────┼───────┼───────┼───────┼─────────┼───────┼───────────┼───────┼───────────────┤
+    &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans    &trans  &trans      &trans  &trans
+// └───────┴───────┼───────┼─────────┴───────┴───────┼───────┴─────────┴───────┼───────────┼───────────────────────┘
+            &trans  &trans      &trans                    &trans                &trans      &trans
+//                 └───────┴─────────────────────────┴─────────────────────────┴───────────┘
+            >;
+        };
         layer7 { status = "reserved"; };
     };
 };

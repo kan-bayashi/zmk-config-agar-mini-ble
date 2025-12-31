@@ -86,6 +86,18 @@
             display-name = "Layer-Tap(HP)";
         };
 
+        // lt_left: timeless layer-tap for left space
+        lt_left: layer_tap_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            bindings = <&mo>, <&kp>;
+            display-name = "Layer-Tap(TL)";
+        };
+
         // Rename trans and none for ZMK Studio display; trans listed first
         trans: transparent { display-name = "_Trans"; };
         none: none { display-name = "Key(None)"; };

@@ -1,1 +1,4 @@
 zzt_*
+_tmp/
+.DS_Store
+Thumbs.db
