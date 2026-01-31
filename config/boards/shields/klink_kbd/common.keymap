@@ -117,9 +117,9 @@
         ZMK_MACRO(zmk_reserved_bt_clear_0, bindings = <&bt BT_SEL 0>, <&bt BT_CLR>, <&kp SHOW_LED>;)
         ZMK_MACRO(zmk_reserved_bt_clear_1, bindings = <&bt BT_SEL 1>, <&bt BT_CLR>, <&kp SHOW_LED>;)
         ZMK_MACRO(zmk_reserved_bt_clear_2, bindings = <&bt BT_SEL 2>, <&bt BT_CLR>, <&kp SHOW_LED>;)
-        ZMK_MACRO(zmk_reserved_bt_conn_0,  bindings = <&out OUT_BLE>, <&bt BT_SEL 0>, <&kp SHOW_LED>;)
-        ZMK_MACRO(zmk_reserved_bt_conn_1,  bindings = <&out OUT_BLE>, <&bt BT_SEL 1>, <&kp SHOW_LED>;)
-        ZMK_MACRO(zmk_reserved_bt_conn_2,  bindings = <&out OUT_BLE>, <&bt BT_SEL 2>, <&kp SHOW_LED>;)
+        ZMK_MACRO(zmk_reserved_bt_conn_0,  bindings = <&bt BT_DISC>, <&out OUT_BLE>, <&bt BT_SEL 0>, <&kp SHOW_LED>;)
+        ZMK_MACRO(zmk_reserved_bt_conn_1,  bindings = <&bt BT_DISC>, <&out OUT_BLE>, <&bt BT_SEL 1>, <&kp SHOW_LED>;)
+        ZMK_MACRO(zmk_reserved_bt_conn_2,  bindings = <&bt BT_DISC>, <&out OUT_BLE>, <&bt BT_SEL 2>, <&kp SHOW_LED>;)
 
         device_bt1: device_bt1 {
             compatible = "zmk,behavior-hold-tap";
